@@ -51,6 +51,7 @@ public class Board extends JPanel implements Runnable, Constants {
     private int powCount = 0; //counter for gun PowerUp; if 0, then shoot only one shot.
     private boolean hasShield = false;//true if shield powerUp is taken
     private boolean hasGuns = false;//true if gun power up is taken
+    private int deathCount = 0;
     
     private boolean ingame = true;
     private final String explImg = "src/images/explosion.png";
@@ -105,7 +106,7 @@ public class Board extends JPanel implements Runnable, Constants {
         shot = new Shot();
         shot2 = new Shot();
         shot3 = new Shot();
-
+        
         if (animator == null || !ingame) {
             animator = new Thread(this);
             animator.start();
@@ -259,6 +260,19 @@ public class Board extends JPanel implements Runnable, Constants {
             ingame = false;//end the game 
             message = "You Win!";
         }
+        
+        if (deathCount == 12){
+            if (direction < 0){// if negative
+                direction = Math.abs(direction);
+                direction++;
+                direction *= -1;
+                deathCount = 0;
+            } else {
+                direction++;
+                deathCount = 0;
+            }
+        }
+        
 
         // player
         player.act();//do player actions
@@ -287,6 +301,7 @@ public class Board extends JPanel implements Runnable, Constants {
                             enemy.setDying(true);
                             Sound.BOOM.play();
                             deaths++;
+                            deathCount++;
                             shot.die();
                         }
                     }
@@ -297,6 +312,7 @@ public class Board extends JPanel implements Runnable, Constants {
                             enemy.setDying(true);
                             Sound.BOOM.play();
                             deaths++;
+                            deathCount++;
                             shot2.die();
                         }
                     }
@@ -307,6 +323,7 @@ public class Board extends JPanel implements Runnable, Constants {
                             enemy.setDying(true);
                             Sound.BOOM.play();
                             deaths++;
+                            deathCount++;
                             shot3.die();
                         }
                     }
@@ -353,6 +370,7 @@ public class Board extends JPanel implements Runnable, Constants {
                             enemy.setDying(true);
                             Sound.BOOM.play();
                             deaths++;
+                            deathCount++;
                             shot.die();
                         }
                     }
@@ -373,10 +391,12 @@ public class Board extends JPanel implements Runnable, Constants {
         for (Enemy enemy: enemies) {
 
             int x = enemy.getX();
+            
+            if (x >= BOARD_WIDTH - BORDER_RIGHT && direction > 0) {
+            //if (x >= BOARD_WIDTH - BORDER_RIGHT && direction != -1) {//change this bit 
 
-            if (x >= BOARD_WIDTH - BORDER_RIGHT && direction != -1) {
-
-                direction = -1;
+                //direction = -1;//also this 
+                direction *= -1;
                 Iterator i1 = enemies.iterator();
 
                 while (i1.hasNext()) {
@@ -385,10 +405,12 @@ public class Board extends JPanel implements Runnable, Constants {
                     a2.setY(a2.getY() + GO_DOWN);
                 }
             }
+            
+            if (x <= BORDER_LEFT && direction < 0) {
+            //if (x <= BORDER_LEFT && direction != 1) {//this too 
 
-            if (x <= BORDER_LEFT && direction != 1) {
-
-                direction = 1;
+                //direction = 1; 
+                direction *= -1;
 
                 Iterator i2 = enemies.iterator();
 
@@ -535,7 +557,6 @@ public class Board extends JPanel implements Runnable, Constants {
                 }
             }
         }
-        
     }
 
     @Override
