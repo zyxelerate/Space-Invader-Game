@@ -2,7 +2,6 @@ package spacegame;
 
 import java.awt.Image;
 
-
 public class Entity {
    private boolean visible;
     private Image image;
